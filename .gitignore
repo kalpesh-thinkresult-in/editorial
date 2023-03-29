@@ -1,17 +1,16 @@
-*/config/development
-*/logs/log-*.php
-!*/logs/index.html
-*/cache/*
-!*/cache/index.html
-!*/cache/.htaccess
+# ignore ALL .log files
+*.log
+.env
+.gitignore
 
-user_guide_src/build/*
-user_guide_src/cilexer/build/*
-user_guide_src/cilexer/dist/*
-user_guide_src/cilexer/pycilexer.egg-info/*
+# ignore ALL files in ANY directory named temp
+temp/
 
-#codeigniter 3
-application/logs/*
-!application/logs/index.html
-!application/logs/.htaccess
-/vendor/
+# ignore ALL files in writable
+writable/
+
+test/
+
+app/Config/App.php
+app/Config/Database.php
+
