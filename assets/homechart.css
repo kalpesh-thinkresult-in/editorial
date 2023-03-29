@@ -1,0 +1,54 @@
+  .fr
+        {
+            float: right;
+            width: 50%;
+        }
+        .fl
+        {
+            float: left;
+            width: 50%;
+        }
+        .txtHeader
+        {
+            color: #ffffff;
+            font-weight: bold;
+            font-family: Arial;
+            font-size: 11px;
+            background-color: #1B4E7B;
+        }
+        .txtIndicesHeader
+        {
+            color: #000000;
+            font-weight: bold;
+            font-family: Arial;
+            font-size: 12px;
+        }
+        .txtIndicesHeader1
+        {
+            color: #000000;
+            font-family: Arial;
+            font-size: 11px;
+            font-weight:bold;
+        }
+        .bold
+        {
+            font-weight: bold;
+        }
+        .SensexFont {
+            font-weight: bold;
+            font-size: 12px;
+            color: #000000;
+            font-family: Arial,Verdana;
+        }
+        .SensexPriceFont {
+    font-weight: bold;
+    font-size: 12px;
+    color: #000000;
+    font-family: Arial,Verdana;
+}
+        .percentage {
+            font-weight: normal;
+            font-size: 11px;
+            color: #ff0200;
+            font-family: Arial,Verdana;
+        }
