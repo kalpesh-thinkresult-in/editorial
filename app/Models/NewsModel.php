@@ -121,6 +121,9 @@ class NewsModel extends Model
                     ->update();
                 $db->close();
             }
+
+            //update Tag master
+            $this->updateTagMaster($data["tags"]);
         }
         // adding category mapping to database
         //deleteting existing
@@ -152,6 +155,23 @@ class NewsModel extends Model
         //     $db->close();
         // }
         return $id;
+    }
+
+    protected function updateTagMaster($tags)
+    {
+        if (!empty($tags)) {
+            $db = db_connect();
+            $model = new \App\Models\MastersModel();
+            foreach ($tags as $tag) {
+                $row = $db->query("SELECT * FROM tagmaster where tag='$tag' order by tag ASC")->getRow();
+                if (empty($row)) {
+                    $data["txthdn"] = -1;
+                    $data["txttag"] = $tag;
+                    $model->saveTag($data);
+                }
+            }
+            $db->close();
+        }
     }
 
     protected function addCompanyCodeLink($recdesc)

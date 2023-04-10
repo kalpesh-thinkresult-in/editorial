@@ -207,7 +207,7 @@
                       <li class="nav-item">
                         <a href="<?= base_url("masters/keywords") ?>" class="nav-link">
                           <i class="far fa-circle nav-icon"></i>
-                          <p>Keyword Master</p>
+                          <p>Stockcode-Keywords</p>
                         </a>
                       </li>
                     <?php endif //Keyword Master ?>
