@@ -7,22 +7,23 @@ use CodeIgniter\Model;
 class NewsApiModel extends Model
 {
 
-    public function getNewsLatest($lang, $cates, $page, $count)
+    public function getNewsList($lang, $cates, $page, $count, $priority)
     {
         $rtndata = null;
-        if (!empty($cates)) {
+        if ($cates != "default") {
             $cateids = str_replace(";", ",", $cates);
             $sql = "SELECT 
                         DISTINCT n.* 
                     FROM categorymaster AS cm 
-                    INNER JOIN News AS n ON FIND_IN_SET(cm.id,n.categories)
-                    WHERE FIND_IN_SET(cm.id,'$cateids') OR FIND_IN_SET(cm.parent_cate_id,'$cateids')
+                    INNER JOIN news AS n ON FIND_IN_SET(cm.id,n.categories)
+                    WHERE (FIND_IN_SET(cm.id,'$cateids') OR FIND_IN_SET(cm.parent_cate_id,'$cateids'))
+                    AND n.priority = $priority
                     ORDER BY n.createdon DESC LIMIT $page, $count";
         } else {
             $sql = "SELECT 
                         DISTINCT n.* 
-                    FROM News AS n 
-                    WHERE n.lang='$lang'
+                    FROM news AS n 
+                    WHERE n.lang='$lang' AND n.priority = $priority
                     ORDER BY n.createdon DESC LIMIT $page, $count";
         }
 
@@ -34,11 +35,11 @@ class NewsApiModel extends Model
         return $rtndata;
     }
 
-    public function getNewsDetails($slug = "")
+    public function getNewsDetails($id = "")
     {
         $rtndata = [];
         $db = db_connect();
-        $query = $db->query("SELECT * FROM news WHERE slug='$slug'");
+        $query = $db->query("SELECT * FROM news WHERE id= $id");
         $rtndata = $query->getRow();
         $db->close();
         //updating pageHit

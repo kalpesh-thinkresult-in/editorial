@@ -26,31 +26,19 @@ class DashboardModel extends Model
 
         //client category wise news count - Todays News and Total News
         $sql = "";
-        $sql = "select 	
-                    main.clientid,
-                    main.clientname,
-                    main.baseurl,
-                    main.cateid,
-                    main.category,
-                    main.parent_cate_id,
-                    count(nwt.id) as Todaynews,
-                    count(nw.id) as Totalnews
-                from
-                    (SELECT 
-                        cl.id as 'clientid' ,
-                        cl.clientname,
-                        cl.baseurl,
-                        cm.id as 'cateid',
-                        cm.category,
-                        cm.parent_cate_id
-                    FROM
-                        clientmaster as cl
-                        left join categorymaster as cm on cm.clientid = cl.id
-                    ) as main
-                    LEFT JOIN news as nw on concat(',',nw.categories) like concat('%,',main.cateid,',%')
-                    LEFT JOIN news as nwt on concat(',',nwt.categories) like concat('%,',main.cateid,',%') and DATE(nwt.createdon) = '" . date("Y-m-d") . "'
-                GROUP BY
-                    main.clientid, main.clientname, main.baseurl, main.cateid, main.category, main.parent_cate_id
+        $sql = "SELECT 
+            cl.id as 'clientid' ,
+            cl.clientname,
+            cl.baseurl,
+            cm.id as 'cateid',
+            cm.category,
+            cm.parent_cate_id,
+            (select count(id) from news as nwt where concat(',',nwt.categories) like concat('%,',cm.id,',%') and DATE(nwt.createdon) = '" . date("Y-m-d") . "') as Todaynews,
+        (select count(id) from news as nw where concat(',',nw.categories) like concat('%,',cm.id,',%')) as Totalnews
+        FROM
+            clientmaster as cl
+            left join categorymaster as cm on cm.clientid = cl.id
+        
         ";
         $catenwesrecord = $db->query($sql)->getResult();
 
