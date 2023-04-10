@@ -199,7 +199,7 @@ class NewsModel extends Model
         //             order by cln.clientname, menu";
         $sql = "
                 Select 
-                    tbl.id, tbl.guid, tbl.lang, cmp.id as newsid, tbl.clientid, concat(cln.clientname,' --> ',menu) as menu 
+                    tbl.id, tbl.guid, tbl.lang, cmp.id as newsid, tbl.clientid, concat(cln.clientname,'-',menu) as menu 
                 from (
                         select 
                             tp1.id, tp1.lang, tp1.guid, tp1.clientid, tp1.category as 'menu' 
@@ -208,7 +208,7 @@ class NewsModel extends Model
                             where parent_cate_id = 0
                         UNION
                         SELECT 
-                            ct.id, ct.lang, ct.guid, ct.clientid, concat(ctl.category,' --> ',ct.category) as'menu' 
+                            ct.id, ct.lang, ct.guid, ct.clientid, concat(ctl.category,'-',ct.category) as'menu' 
                         FROM 
                             categorymaster as ct
                             left join categorymaster as ctl on ctl.id = ct.parent_cate_id

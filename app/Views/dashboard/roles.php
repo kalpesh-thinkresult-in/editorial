@@ -1,4 +1,4 @@
-<?= $this->extend('dashboard\include\admin_layout') ?>
+<?= $this->extend('dashboard/include/admin_layout') ?>
 
 <!-- Page style -->
 <?= $this->section('stylesheet') ?>

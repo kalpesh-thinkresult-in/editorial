@@ -71,6 +71,25 @@ class MastersModel extends Model
 
 
     // ============================================== Category ====================================================
+    public function getClientCategoriesSummary()
+    {
+        $rtndata = null;
+        $db = db_connect();
+        $query = $db->query("        
+            SELECT 
+                clientmaster.id, clientmaster.clientname, clientmaster.baseurl,
+                (select count(cme.id) from categorymaster as cme where cme.clientid = clientmaster.id and cme.isactive=1 and cme.lang='eng') as 'engcount',
+                (select count(cmh.id) from categorymaster as cmh where cmh.clientid = clientmaster.id and cmh.isactive=1 and cmh.lang='hindi') as 'hndcount'		
+            FROM 
+                clientmaster
+            where
+                clientmaster.isactive=1
+        ");
+        $rtndata = $query->getResult();
+        $db->close();
+
+        return $rtndata;
+    }
     public function getCategories()
     {
         $rtndata = null;

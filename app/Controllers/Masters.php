@@ -30,7 +30,7 @@ class Masters extends BaseController
     public function cate()
     {
         $model = new \App\Models\MastersModel();
-        $result = $model->getClients();
+        $result = $model->getClientCategoriesSummary();
         $categories = $model->getCategories();
         $data['records'] = $result;
         $data['datatable'] = json_encode($result);

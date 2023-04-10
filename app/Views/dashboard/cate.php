@@ -1,4 +1,4 @@
-<?= $this->extend('dashboard\include\admin_layout') ?>
+<?= $this->extend('dashboard/include/admin_layout') ?>
 
 <!-- Page style -->
 <?= $this->section('stylesheet') ?>
@@ -70,6 +70,8 @@
                                     <th>Id</th>
                                     <th>Client</th>
                                     <th>Url</th>
+                                    <th>English</th>
+                                    <th>Hindi</th>
                                     <th>Action</th>
                                 </thead>
                                 <tbody>
@@ -78,6 +80,8 @@
                                         echo "<td>" . $item->id . "</td>";
                                         echo "<td>" . $item->clientname . "</td>";
                                         echo "<td>" . $item->baseurl . "</td>";
+                                        echo "<td>" . $item->engcount . "</td>";
+                                        echo "<td>" . $item->hndcount . "</td>";
                                         echo "<td>";
                                         if (checkaccess("CATE", "edit") && checkaccess("CATE", "edit") && checkaccess("CATE", "edit")):
                                             echo '<a href="#" onclick="openmodel(' . $item->id . ')">Show Categories</a>';
@@ -113,6 +117,19 @@
             <form method="post">
                 <div class="modal-body">
                     <input type="hidden" id="txthdn" name="txthdn" value="-1" />
+                    <div class="row">
+                        <div class="col-12">
+                            <b class="mr-3"><label>Select Language:</label></b>
+                            <input type="radio" class="mr-2 rdlanguage" checked name="language" id="rdeng"
+                                value="eng"><label for="rdeng" style="font-weight:500;cursor: pointer;"
+                                class="mr-5">English
+                                Categories</label>
+                            <input type="radio" class="mr-2 rdlanguage" name="language" id="rdhindi"
+                                value="hindi"><label for="rdhindi" style="font-weight:500;cursor: pointer;">Hindi
+                                Categories</label>
+                        </div>
+                    </div>
+
                     <table class="table table-striped table-bordered table-hover" style="width:100%">
                         <thead>
                             <th>Category</th>
@@ -146,14 +163,6 @@
                 <div class="form-group">
                     <label for="role">Category</label>
                     <input type="text" class="form-control" id="txtcate" placeholder="Enter Category">
-                </div>
-                <div class="form-group">
-                    <label for="role">Language</label>
-                    <select class="form-control" id="sellanguage">
-                        <option value="-1">Select Language</option>
-                        <option value="eng">English</option>
-                        <option value="hindi">Hindi</option>
-                    </select>
                 </div>
                 <div id="dvparent">
                     <div class="form-group">
@@ -208,6 +217,8 @@
 <!-- jsGrid -->
 <script src="<?= base_url() ?>assets/js/jquery.dataTables.min.js"></script>
 <script>
+    let lang = "eng";
+    let clientid = -1;
     if (window.history.replaceState) {
         window.history.replaceState(null, null, window.location.href);
     }
@@ -226,14 +237,16 @@
         jQuery("#txthdn2").val("-1");
         jQuery("#txtcate").val("");
         jQuery("#txtguid").html("");
-        jQuery("#sellanguage").val("-1");
-
     }
     const clearcontrol3 = () => {
         jQuery("#txthdn3").val("-1");
     }
-
-    const openmodel = (idn, iname) => {
+    $('input[name="language"]').click(function () {
+        lang = jQuery(this).val();
+        getMainCates(clientid);
+    });
+    const openmodel = (idn) => {
+        clientid = idn;
         var row = data.filter(element => element.id == idn)
         if (row != null && row.length > 0) {
             jQuery("#txthdn").val(row[0].id);
@@ -271,12 +284,12 @@
             jQuery("#lblmodal2head").html(catename + " : [Edit Category]");
             jQuery("#txtcate").val(catename);
             jQuery("#txtguid").html(categuid);
-            jQuery("#sellanguage").val(language);
         }
 
         jQuery("#txthdn2").val(cateid);
         jQuery.noConflict();
         jQuery('#mymodal2').modal('toggle');
+        jQuery("#txtcate").focus();
 
     }
     const openmodel3 = (cateid = -1,) => {
@@ -316,17 +329,13 @@
             alert("Don't use Semicolon ' ; ' in category.");
             return false;
         }
-        if (jQuery("#sellanguage").val() == "-1") {
-            alert("Select Language");
-            return false;
-        }
         var parentid = (jQuery("#txthdn2").val() == jQuery("#selparentcate").val()) ? 0 : jQuery("#selparentcate").val();
         var formdata = {
             "id": jQuery("#txthdn2").val(),
             "clientid": jQuery("#txthdn").val(),
             "guid": uuid(),
             "category": jQuery("#txtcate").val(),
-            "lang": jQuery("#sellanguage").val(),
+            "lang": lang,
             "parentid": parentid,
 
         };
@@ -391,7 +400,7 @@
     // get main categories
     const getMainCates = (idn) => {
         var html = "";
-        var row = tblcate.filter(element => element.clientid == idn && element.parent_cate_id == 0)
+        var row = tblcate.filter(element => element.clientid == idn && element.parent_cate_id == 0 && element.lang == lang)
         if (row != null && row.length > 0) {
             for (let index = 0; index < row.length; index++) {
                 const item = row[index];
@@ -461,7 +470,7 @@
     //get parent categories list
     const getParentCatesDropdown = (defaultId = 0, cntrlname = "#selparentcate") => {
         jQuery(cntrlname).empty()
-        var row = tblcate.filter(element => element.clientid == jQuery("#txthdn").val() && element.parent_cate_id == 0)
+        var row = tblcate.filter(element => element.clientid == jQuery("#txthdn").val() && element.parent_cate_id == 0 && element.lang == lang)
         if (row != null && row.length > 0) {
             jQuery(cntrlname).append("<option value=\"-1\" " + selected + " >Select</option>");
             for (let index = 0; index < row.length; index++) {

@@ -28,10 +28,11 @@ class News extends BaseController
     public function details($lang = "eng", $id = "LTE=")
     {
         $id = base64_decode($id);
-
+        $successmsg = "";
         //================== Save News ==================
         if ($_POST) {
             $id = $this->model->saveNewsInfo($_POST, $_FILES);
+            $successmsg = "News saved successfully !!!";
         }
         //================== End Save  ==================
 
@@ -52,6 +53,8 @@ class News extends BaseController
         //Stockcode Company details
         $mastermodel = new \App\Models\MastersModel();
         $stockcodes = $mastermodel->getCompanyCode();
+        $clients = $mastermodel->getClients();
+
 
         //================== End Default page data ==================
 
@@ -65,6 +68,8 @@ class News extends BaseController
         $data['tags'] = $tags;
         $data['stockcodes'] = $stockcodes;
         $data['menus'] = json_encode($menulist);
+        $data['clients'] = json_encode($clients);
+        $data['successmsg'] = $successmsg;
 
         return view('dashboard/newspage', $data);
     }

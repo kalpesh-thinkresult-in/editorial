@@ -1,4 +1,4 @@
-<?= $this->extend('dashboard\include\admin_layout') ?>
+<?= $this->extend('dashboard/include/admin_layout') ?>
 <?= $this->section('stylesheet') ?>
 <style>
     .note-editor.note-airframe .note-editing-area .note-editable,

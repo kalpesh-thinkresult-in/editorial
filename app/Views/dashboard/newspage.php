@@ -1,4 +1,4 @@
-<?= $this->extend('dashboard\include\admin_layout') ?>
+<?= $this->extend('dashboard/include/admin_layout') ?>
 <?= $this->section('stylesheet') ?>
 <style>
     .note-editor.note-airframe .note-editing-area .note-editable,
@@ -17,7 +17,40 @@
     <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
-            <h3>News</h3>
+        <style>
+    .hideMe {
+        position: absolute;
+        z-index: 99999;
+        top:100;
+        right:0;
+        padding: 20px;
+        padding-right: 40px;
+        border-radius: 15px 0px 0px 15px;
+
+        -webkit-animation: cssAnimation 5s forwards; 
+        animation: cssAnimation 5s forwards;
+}
+@keyframes cssAnimation {
+    0%   {opacity: 1;}
+    60%  {opacity: 0.8;}
+    70%  {opacity: 0.5;}
+    80%  {opacity: 0.3;}
+    100% {opacity: 0;}
+}
+@-webkit-keyframes cssAnimation {
+    0%   {opacity: 1;}
+    60%  {opacity: 0.8;}
+    70%  {opacity: 0.5;}
+    80%  {opacity: 0.3;}
+    100% {opacity: 0;}
+}
+</style>                            
+<div>
+    <?php if($successmsg!=""):
+        echo '<div class="bg-success hideMe">'.$successmsg.'</div>';
+    endif;?>
+</div>
+            <h3>News</h3>            
             <form method="post" enctype="multipart/form-data">
                 <input type="hidden" name="hdnid" value="<?= (isset($newsdata->id)) ? $newsdata->id : '' ?>" />
                 <input type="hidden" name="hdnlang"
@@ -31,6 +64,27 @@
                                         <h3 class="card-title">
                                             News Heading
                                         </h3>
+                                        <div class="float-right">
+                                            <label class="form-check-label" for="chkshowrss">Type</label>
+                                            <select id="priority" name="priority" class="ml-2">
+                                                <option value="1"
+                                                    <?= (isset($newsdata->priority)) ? (($newsdata->priority == 1) ? "selected" : "") : ""; ?>>
+                                                    REGULAR</option>
+                                                <option value="2"
+                                                    <?= (isset($newsdata->priority)) ? (($newsdata->priority == 2) ? "selected" : "") : ""; ?>>
+                                                    FEATURE</option>
+                                                <option value="3"
+                                                    <?= (isset($newsdata->priority)) ? (($newsdata->priority == 3) ? "selected" : "") : ""; ?>>
+                                                    LATEST</option>
+                                                <option value="4"
+                                                    <?= (isset($newsdata->priority)) ? (($newsdata->priority == 4) ? "selected" : "") : ""; ?>>
+                                                    TOP</option>
+                                                <option value="5"
+                                                    <?= (isset($newsdata->priority)) ? (($newsdata->priority == 5) ? "selected" : "") : ""; ?>>
+                                                    MOST POPULAR</option>
+                                            </select>
+                                        </div>
+
                                     </div>
                                     <!-- /.card-header -->
                                     <div class="card-body">
@@ -151,6 +205,7 @@
                                         <h3 class="card-title">
                                             Categories
                                         </h3>
+                                        <a class="float-right" href="javascript:void(0)" id="showcate">Open</a>
                                     </div>
                                     <!-- /.card-header -->
                                     <div class="card-body">
@@ -237,18 +292,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-7">
-                                                    <label class="form-check-label" for="chkshowrss">News
-                                                        Priority</label>
-                                                    <select id="priority" name="priority" class="ml-2">
-                                                        <option value="1" <?= ($newsdata->priority == 1) ? "selected" : ""; ?>>
-                                                            General</option>
-                                                        <option value="0" <?= ($newsdata->priority == 0) ? "selected" : ""; ?>>
-                                                            Low</option>
-                                                        <option value="2" <?= ($newsdata->priority == 2) ? "selected" : ""; ?>>
-                                                            High</option>
-                                                        <option value="3" <?= ($newsdata->priority == 3) ? "selected" : ""; ?>>
-                                                            Top</option>
-                                                    </select>
+
                                                 </div>
                                             </div>
                                         </h3>
@@ -306,11 +350,35 @@
         </div>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
+<!--============================================= modals ==================================================-->
+<!--=======================================================================================================-->
+<!-- Model -->
+<div class="modal fade" id="mdcate" style="display: none;" data-backdrop="static" data-keyboard="false"
+    aria-hidden="true" role="dialog">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Select Categories</span></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row" id="dvcate">
+                    
+                </div>
+            </div>
+            <div class="modal-footer text-right">
+                <button type="button" class="btn btn-default" id="mdcl4">Close</button>
+            </div>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
 <?= $this->endSection() ?>
 
 <?= $this->section('javascript') ?>
 <!-- Page specific script -->
 <script>
+    let categories=JSON.parse('<?=$menus?>');
+    let clients=JSON.parse('<?=$clients?>');
+    
     var baseurl = "<?= base_url("webgeneral/stockpage/") ?>";
     var sel = null, range = null;
     $(function () {
@@ -330,6 +398,66 @@
         $('#selstockcodes').select2({
             tags: true,
             tokenSeparators: [',', ' ']
+        });
+
+        //binding client and categories
+        const bindcategories = ()=>{
+            let divhtml = "";
+            let cindex = 1;
+            
+            if(clients.length>0){
+                let cdata = $('#selcategory').val();
+
+                $.each(clients, function(key,value) {
+                    let clientid=value.id;
+                    let html = "";
+                    var cates = categories.filter(element => element.clientid == clientid)
+                    if (cates != null && cates.length > 0) {
+                        //building header tags of select
+                        html+='<div class="col-2">';
+                        html+="<b>"+value.clientname+"</b>";
+                        html+='<select id="catemenu'+cindex+'" data-id="catemenu'+cindex+'" multiple="" class="form-control clscatsel" style="height:300px;">';
+                        
+                        $.each(cates, function(ckey,cvalue) {
+                            //adding options in select
+                                let selected = "";
+                                let indx = $.inArray(cvalue.id, cdata);
+                                if(indx > -1){
+                                    selected="selected";
+                                }
+                                html+='<option value="'+ cvalue.id +'" '+ selected +'>'+cvalue.menu+'</option>';
+                        })      
+
+                        //closing header tags
+                        html+="</select>";
+                        html+="</div>";
+                    }
+                    //adding main div html
+                    divhtml +=html;
+                    cindex+=1;
+                });     
+            }
+            $("#dvcate").html(divhtml);
+        }
+        bindcategories(); // calling to bind
+
+        $(document).on('click',".clscatsel", function(){
+            let cdata = $('#selcategory').val();
+            
+            let controlid = $(this).data("id");
+            $("#"+controlid).find("option").each(function() {
+                let indx = $.inArray(this.value, cdata);                        
+                
+                if(this.selected){
+                    if (indx < 0) cdata.push(this.value);
+                }
+                else{
+                    if (indx > -1) cdata.splice(indx,1);
+                }
+            });
+
+             
+             $('#selcategory').val(cdata).trigger('change');
         });
         //==============================================================================================
 
@@ -374,7 +502,17 @@
         function clearmodal() {
             $("#selCompanyStockCode").val(-1);
             $('#mdstocklink').modal('toggle');
+        }
 
+        $("#showcate").click(function(){
+            $('#mdcate').modal('toggle');  
+            bindcategories();
+        })
+        $("#mdcl4").click(function () {
+            clearmodalcate();
+        });
+        function clearmodalcate() {
+            $('#mdcate').modal('toggle');
         }
 
     })
