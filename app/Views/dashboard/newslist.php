@@ -105,7 +105,6 @@
     if (window.history.replaceState) {
         window.history.replaceState(null, null, window.location.href);
     }
-    var data = JSON.parse('<?php $datatable ?>');
     jQuery('#example').DataTable();
 
     const confirmdel = () => {
