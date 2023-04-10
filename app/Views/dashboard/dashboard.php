@@ -103,6 +103,9 @@
                 }
             </style>
             <div class="row">
+                <div class="col-12">
+                    <h5 class="m-1">Client and category wise News Count update:</h5>
+                </div>
                 <?php if (!empty($clientcatewisecount)):
                     $clientname = "";
                     $isfirst = 1;
@@ -132,8 +135,8 @@
                         endif;
                         echo '<tr>
                                 <td>' . $item->category . '</td>
-                                <td>' . $item->Todaynews . '</td>
-                                <td>' . $item->Totalnews . '</td>
+                                <td>' . (($item->Todaynews > 0) ? $item->Todaynews : "-") . '</td>
+                                <td>' . (($item->Totalnews > 0) ? $item->Totalnews : "-") . '</td>
                             </tr>';
 
                     endforeach;
