@@ -7,6 +7,21 @@ use CodeIgniter\Model;
 class NewsApiModel extends Model
 {
 
+    public function validateClient()
+    {
+        $key = $_SERVER['HTTP_HOST'];
+
+        $db = db_connect();
+        $client = $db->query("SELECT * FROM clientmaster 
+                            WHERE CONCAT('/',baseurl) like '%/$key%' 
+                            OR CONCAT('.',baseurl) like '%.$key%'")->getRow();
+
+        $db->close();
+        if (empty($client)) {
+            return false;
+        }
+        return true;
+    }
     public function getNewsList($lang, $cates, $page, $count, $priority)
     {
         $rtndata = null;

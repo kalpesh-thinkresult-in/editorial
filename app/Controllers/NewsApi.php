@@ -11,6 +11,12 @@ class NewsApi extends ResourceController
     public function __construct()
     {
         $this->model = new \App\Models\NewsApiModel();
+        //Validate Client Access
+        // if ($this->model->validateClient() == false) {
+        //     echo "You don't have access to this API.";
+        //     die;
+        // }
+
     }
     /*
     =   REGULAR [category wise]         : priority number 1 //​http://investmentguru.co/NewsApi/regular/eng/1

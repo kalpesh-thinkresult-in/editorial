@@ -46,12 +46,11 @@
                 <div class="col-lg-6 col-sm-12">
                     <div class="form-group">
                         <label for="role">Select Role</label>
-                        <select class="form-control select2 select2-hidden-accessible" id="selrole" name="selrole"
-                            style="width: 100%;" data-select2-id="1" tabindex="-1" aria-hidden="true">
+                        <select class="form-control select2 select2-hidden-accessible" id="selrole" name="selrole" style="width: 100%;" data-select2-id="1" tabindex="-1" aria-hidden="true">
                             <option selected="selected" value="-1">Select Role</option>
                             <?php
-                            if (!empty($roles)):
-                                foreach ($roles as $item):
+                            if (!empty($roles)) :
+                                foreach ($roles as $item) :
                                     echo '<option value="' . $item->id . '">' . $item->role . '</option>';
                                 endforeach;
                             endif;
@@ -118,8 +117,7 @@
                                     <input type="checkbox" class="form-control" id="ROLEACCedit">
                                 </td>
                                 <td>
-                                    <input type="checkbox" class="form-control" id="ROLEACCdelete"
-                                        style="display:none;">
+                                    <input type="checkbox" class="form-control" id="ROLEACCdelete" style="display:none;">
                                 </td>
                             </tr>
                             <tr>
@@ -194,7 +192,7 @@
             </div>
             <div class="row">
                 <div class="col-12 text-center">
-                    <?php if (checkaccess("ROLEACC", "add") || checkaccess("ROLEACC", "edit")): ?>
+                    <?php if (checkaccess("ROLEACC", "add") || checkaccess("ROLEACC", "edit")) : ?>
                         <button class="btn btn-primary" id="btnupdate">Update</button>
                     <?php endif ?>
 
@@ -212,20 +210,20 @@
     var data = JSON.parse('<?= $datatable ?>');
     const menucode = ["ROLES", "USERS", "ROLEACC", "CLIENT", "CATE", "TAGS", "NEWS", "KEYWORDS"];
 
-    $(function () {
+    $(function() {
         $('#selrole').select2();
-        $("input[data-bootstrap-switch]").each(function () {
+        $("input[data-bootstrap-switch]").each(function() {
             $(this).bootstrapSwitch("state", $(this).prop("checked"));
         });
     });
 
     jQuery('input[type=checkbox]').prop('checked', false);
 
-    jQuery("#selectAll").on('change', function () {
+    jQuery("#selectAll").on('change', function() {
         jQuery('input[type=checkbox]').prop('checked', this.checked);
     })
 
-    jQuery("#btnupdate").click(function () {
+    jQuery("#btnupdate").click(function() {
         if (jQuery('#selrole').val() == "-1") {
             alert("Select Role !!!");
             return false
@@ -242,12 +240,15 @@
             data.push(row);
         });
         // console.log(data);
-        $.post('<?= base_url("sysadmin/updateaccess") ?>', { "roleid": jQuery('#selrole').val(), "data": data }, function () {
+        $.post('<?= base_url("sysadmin/updateaccess") ?>', {
+            "roleid": jQuery('#selrole').val(),
+            "data": data
+        }, function() {
             location.reload();
         });
     });
 
-    jQuery('#selrole').on('change', function () {
+    jQuery('#selrole').on('change', function() {
         jQuery('#selrole').val();
         jQuery('input[type=checkbox]').prop('checked', false);;
         displayaccess();
@@ -256,7 +257,6 @@
     const displayaccess = () => {
         menucode.forEach(item => {
             var row = data.filter(element => (element.roleid == jQuery('#selrole').val() && element.menucode == item))
-            console.log(row[0].allowadd);
             if (row != null && row.length > 0) {
                 jQuery("#" + item + "add").prop('checked', (row[0].allowadd == 1) ? true : false);
                 jQuery("#" + item + "edit").prop('checked', (row[0].allowedit == 1) ? true : false);

@@ -12,9 +12,7 @@ class Dashboard extends BaseController
     public function index()
     {
         $data = $this->model->getPageData();
-        // echo "<pre>";
-        // print_r($data);
-        // die;
+
         return view('dashboard/dashboard', $data);
     }
 }

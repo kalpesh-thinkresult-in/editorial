@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-class SysAdmin extends BaseController
+class Sysadmin extends BaseController
 {
     // ===================================== Roles =========================================================
     public function roles()
@@ -57,7 +57,6 @@ class SysAdmin extends BaseController
         $model = new \App\Models\SysAdminModel();
         $data['msg'] = "";
         if ($_POST) {
-
         }
 
         $users = $model->getUsers();
@@ -79,5 +78,4 @@ class SysAdmin extends BaseController
             echo "not data received";
         }
     }
-
 }
